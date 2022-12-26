@@ -1,12 +1,11 @@
 <template>
     <el-menu
-        efault-active="1-4-1"
         class="el-menu-vertical-demo"
         router
         :collapse="collapse"
         background-color="#112f50"
         active-text-color="#ffd04b"
-        default-active="/"
+        :default-active="activeMenu()"
         text-color="#fff">
       <el-menu-item index="/">
         <i class="el-icon-menu"></i>
@@ -63,13 +62,25 @@ export default {
       // collapse: false
     }
   },
-  props: ['collapse']
+  props: ['collapse'],
+  methods: {
+    activeMenu () {
+      console.log(this.$route)
+      let {path, meta} = this.$route
+      if (meta.activeMenu) return meta.activeMenu
+      return path
+    }
+  }
 }
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 200px;
   min-height: 400px;
+/deep/ .is-active{
+  background: #1e78bf !important;
+  color: #ffd04b !important;
+}
 }
 </style>

@@ -10,7 +10,7 @@ import OrderMange from "@/viwes/OrderMange";
 import OrderList from "@/viwes/OrderMange/list/list";
 import OrderCallect from "@/viwes/OrderMange/Callect/Callect";
 import OrderAuditing from "@/viwes/OrderMange/Auditing/Auditing";
-
+import AddGoods from "@/viwes/GoodsMange/List/addGoods";
 
 
 Vue.use(VueRouter)
@@ -39,6 +39,14 @@ const routes = [
                         path: 'category',
                         name: 'category',
                         component: GoodsCate
+                    },
+                    {
+                        path: 'addgoods',
+                        name: 'addgoods',
+                        component: AddGoods,
+                        meta: {
+                            activeMenu: '/goods/list'
+                        }
                     }
                 ]
             },

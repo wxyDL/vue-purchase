@@ -6,6 +6,12 @@ const base = {
     homeDataFormat: '/api/home/format',
     //今日订单的数据接口
     homeDataOrderInfo: '/api/home/orderinfo',
+//    产品列表
+    goodsList: '/api/goods/projectList',
+//    产品查询
+    goodsSearch: '/api/goods/search',
+//    删除商品
+    deleteGoods: '/api/goods/deleteItemById'
 
 }
 

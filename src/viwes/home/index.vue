@@ -27,7 +27,10 @@
         <div class="title">月销售额</div>
         <div id="charts" style="width: 100%; height: 300px"></div>
       </div>
-      <div class="area" id="box1">比例分配</div>
+<!--      <div class="area" id="box1">比例分配</div>-->
+      <div class="area" id="box1">产品销售比例
+        <div id="main2" style="width: 100%; height: 300px"></div>
+      </div>
     </div>
 
 
@@ -41,13 +44,16 @@
         <div class="text item">
           <el-row>
             <el-col :span="8">
-              <div>111</div>
+              <p>今日订单数</p>
+              <div>{{orderData.curCollect}}</div>
             </el-col>
             <el-col :span="8">
-              <div>222</div>
+              <p>汇总确认订单</p>
+              <div>{{orderData.curOrderCount}}</div>
             </el-col>
             <el-col :span="8">
-              <div>333</div>
+              <p>累积金额</p>
+              <div>{{orderData.curMoney}}</div>
             </el-col>
           </el-row>
         </div>
@@ -59,13 +65,16 @@
         <div class="text item">
           <el-row>
             <el-col :span="8">
-              <div>111</div>
+              <p>本月订单数</p>
+              <div>{{orderData.collect}}</div>
             </el-col>
             <el-col :span="8">
-              <div>222</div>
+              <p>累积金额</p>
+              <div>{{orderData.money}}</div>
             </el-col>
             <el-col :span="8">
-              <div>333</div>
+              <p>汇总确认订单数</p>
+              <div>{{orderData.orderCount}}</div>
             </el-col>
           </el-row>
         </div>
@@ -75,9 +84,9 @@
           <span>快捷入口</span>
         </div>
         <div class="text item">
-          <el-button type="primary">产品管理</el-button>
-          <el-button>消息管理</el-button>
-          <el-button>内容管理</el-button>
+          <el-button @click="productRouter">产品管理</el-button>
+          <el-button @click="orderRouter">订单管理</el-button>
+          <el-button @click="adminRouter">系统管理</el-button>
         </div>
       </el-card>
     </div>
@@ -86,16 +95,21 @@
 </template>
 
 <script>
+import * as echarts from 'echarts'
 export default {
 name: 'home-index',
   data () {
   return {
   //  首页数据
-    homeData: {}
+    homeData: {},
+  //  订单数据
+    orderData: {}
   }
   },
   mounted () {
     this.getHomeData()
+    this.getDataFormat()
+    this.getHomeOrderData()
   },
   methods: {
     //获取首页数据
@@ -103,9 +117,110 @@ name: 'home-index',
       this.$api.getHomeCount().then((res) => {
         if (res.status === 200) {
           this.homeData = res.data.data.list
-          console.log(this.homeData)
         }
       })
+    },
+  //  获取月销售额
+    getDataFormat () {
+      this.$api.getHomeFormat().then(res => {
+        console.log(res.data.result.data.sale_money)
+        const lineData = res.data.result.data.sale_money
+        console.log(res.data.result.data)
+        let lineX = [], lineY = [], barY = [], pieData = []
+        lineData.forEach(ele => {
+          lineX.push(ele.name)
+          lineY.push(ele.total_amount)
+          barY.push(ele.num)
+        //  处理饼图数据
+          let pieIObj = {}
+          pieIObj.name = ele.name
+          pieIObj.value = ele.total_amount
+          pieData.push(pieIObj)
+        })
+        this.line(lineX,lineY,barY)
+        this.pie(pieData)
+      })
+    },
+  //  月销售额的可视化
+    line (lineX,lineY,barY) {
+      var chartDom = document.getElementById('charts');
+      var myChart = echarts.init(chartDom);
+      var option;
+      option = {
+        tooltip: {
+          trigger: 'axis'
+        },
+        legend: {
+          data: ['销售额', '销售量']
+        },
+        xAxis: {
+          type: 'category',
+          data: lineX
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [
+          {
+            name: '销售额',
+            data: lineY,
+            type: 'line',
+            smooth: true
+          },
+          {
+            name: '销售量',
+            data: barY,
+            type: 'bar',
+            smooth: true
+          }
+        ]
+      };
+      option && myChart.setOption(option);
+    },
+    pie (pieData) {
+      var chartDom = document.getElementById('main2');
+      var myChart = echarts.init(chartDom);
+      var option;
+      option = {
+        tooltip: {
+          trigger: 'item'
+        },
+        legend: {
+          orient: 'vertical',
+          left: 'left'
+        },
+        series: [
+          {
+            name: 'Access From',
+            type: 'pie',
+            radius: '50%',
+            data: pieData,
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
+              }
+            }
+          }
+        ]
+      };
+      option && myChart.setOption(option);
+    },
+  //  今日订单数据
+    getHomeOrderData () {
+      this.$api.getHomeOrderInfo().then(res => {
+        this.orderData = res.data.list
+      })
+    },
+    productRouter () {
+      this.$router.push('/goods/list')
+    },
+    orderRouter () {
+      this.$router.push('/ordermange/orderlist')
+    },
+    adminRouter () {
+      this.$router.push('')
     }
   }
 }
@@ -193,5 +308,11 @@ name: 'home-index',
     }
   }
 }
-
+.home-footer .text .el-row .el-col{
+  text-align: center;
+  border-right: 1px solid #eeeeee;
+}
+.home-footer .text .el-row .el-col:last-child {
+  border-right: none;
+}
 </style>

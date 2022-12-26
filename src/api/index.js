@@ -13,6 +13,18 @@ const api = {
     //获取首页今日订单的接口
     getHomeOrderInfo () {
         return axios.get(base.homeDataOrderInfo)
+    },
+//    获取产品列表数据
+    getGoodsList (params) {
+        return axios.get(base.goodsList, {params})
+    },
+//    产品查询接口
+    goodsSearch (params) {
+        return axios.get(base.goodsSearch, {params})
+    },
+//    删除商品
+    deleteGoods (params) {
+        return axios.get(base.deleteGoods, {params})
     }
 }
 
