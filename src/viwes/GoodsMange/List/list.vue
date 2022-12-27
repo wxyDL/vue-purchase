@@ -53,6 +53,16 @@
             {{ scope.row.create_time | timeFormat }}
           </template>
         </el-table-column>
+        <el-table-column
+            prop="descs"
+            :show-overflow-tooltip="true"
+            label="商品描述">
+        </el-table-column>
+        <el-table-column
+            prop="image"
+            :show-overflow-tooltip="true"
+            label="商品图片">
+        </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button
@@ -170,7 +180,7 @@ export default {
   //  添加商品
     addGoods () {
       this.$router.push('/goods/addgoods')
-    }
+    },
   }
 }
 </script>

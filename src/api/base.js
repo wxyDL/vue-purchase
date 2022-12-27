@@ -11,11 +11,17 @@ const base = {
 //    产品查询
     goodsSearch: '/api/goods/search',
 //    删除商品
-    deleteGoods: '/api/goods/deleteItemById'
+    deleteGoods: '/api/goods/deleteItemById',
+//    商品的类目数据接口
+    goodsCategory: '/api/goods/itemCategory/selectItemCategoryByParentId',
+//    商品添加接口
+    addGoods: '/api/goods/item/insertTbItem'
 
 }
 
 //导出单个文件
-// export const host='http://localhost:9898'
+export const host='http://localhost:9898'
+
+export const upload = '/api/upload'
 
 export default base

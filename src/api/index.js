@@ -25,6 +25,14 @@ const api = {
 //    删除商品
     deleteGoods (params) {
         return axios.get(base.deleteGoods, {params})
+    },
+//    商品类目数据
+    getGoodsCategory (params) {
+        return axios.get(base.goodsCategory, {params})
+    },
+//    商品添加
+    addGoods (params) {
+        return axios.get(base.addGoods, {params})
     }
 }
 
