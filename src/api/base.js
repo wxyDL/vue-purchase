@@ -15,7 +15,9 @@ const base = {
 //    商品的类目数据接口
     goodsCategory: '/api/goods/itemCategory/selectItemCategoryByParentId',
 //    商品添加接口
-    addGoods: '/api/goods/item/insertTbItem'
+    addGoods: '/api/goods/item/insertTbItem',
+//    批量删除
+    batchDelete: '/api/goods/batchDelete'
 
 }
 

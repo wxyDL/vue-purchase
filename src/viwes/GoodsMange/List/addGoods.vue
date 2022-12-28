@@ -10,7 +10,7 @@
       <el-col :span="20"><div class="content">
         <el-card>
           <el-alert
-              title="添加商品"
+              :title="title + '商品'"
               type="info"
               :closable="false">
           </el-alert>
@@ -22,11 +22,6 @@
               <el-input v-model="ruleForm.title"></el-input>
             </el-form-item>
             <el-row>
-              <el-col :span="6">
-                <el-form-item label="规格" prop="specs">
-              <el-input v-model.trim="ruleForm.specs" placeholder="请输入产品规格"></el-input>
-            </el-form-item>
-              </el-col>
               <el-col :span="6">
                 <el-form-item label="库存" prop="num">
               <el-input v-model.trim="ruleForm.num" placeholder="请输入库存"></el-input>
@@ -70,16 +65,33 @@ import GoodsWangEditor from "@/viwes/GoodsMange/List/GoodsWangEditor";
 import GoodsUpload from "@/viwes/GoodsMange/List/GoodsUpload";
 export default {
   name: "addGoods",
+  props: {
+    isAdd: {
+      type: String,
+      default: ''
+    }
+  },
   components: {
     GoodsTree,
     GoodsUpload,
     GoodsWangEditor
   },
+  computed: {
+    title () {
+      if (this.queryId !== undefined) {
+        return '编辑'
+      } else {
+        return '添加'
+      }
+    }
+  },
+  created() {
+    this.getQueryId ()
+  },
   data() {
     return {
       ruleForm: {
         category: '',
-        specs: '',
         price: '',
         title: '',
         isBanner: true,
@@ -88,8 +100,9 @@ export default {
         type: [],
         resource: '',
         descs: '',
-        image: [],
-        cid: ''
+        image: '',
+        cid: '',
+        queryId: ''
       },
       rules: {
         category: [
@@ -98,9 +111,6 @@ export default {
         title: [
           { required: true, message: '请输入产品名称', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
-        ],
-        specs: [
-          { required: true, message: '请输入产品规格', trigger: 'blur' },
         ],
         num: [
           { required: true, message: '请输入库存', trigger: 'blur' },
@@ -169,12 +179,20 @@ export default {
     //获取富文本编辑器里的内容
     getWangEditorHtml (text) {
       this.ruleForm.descs = text
-      console.log(text)
     },
     getPicUrl (picUrl) {
       console.log(picUrl)
-      this.ruleForm.image.push(picUrl)
-      console.log(this.ruleForm.image)
+      this.ruleForm.image = picUrl
+    },
+    getQueryId () {
+      const row = JSON.parse(sessionStorage.getItem('row'))
+      console.log(row)
+      this.queryId = this.$route.query.id
+      if (this.queryId) {
+        this.ruleForm = {...row}
+      } else {
+        return false
+      }
     }
   }
 }

@@ -1,7 +1,8 @@
 <template>
   <el-upload
       :action="upload"
-      :limit="2"
+      :limit="1"
+      :file-list="fileList"
       multiple
       list-type="picture-card"
       :on-preview="handlePictureCardPreview"
@@ -17,8 +18,12 @@ export default {
   name: "GoodsUpload",
   data () {
     return {
-      upload
+      upload,
+      fileList: []
     }
+  },
+  created() {
+    this.fileListPic()
   },
   methods: {
     handleRemove (file, fileList) {
@@ -38,7 +43,20 @@ export default {
       console.log(response.url)
       let pic = response.url.slice(7)
       let picUrl = host + '//' + pic
+      console.log(picUrl)
       this.$emit('getPicUrl', picUrl)
+    },
+    //编辑渲染图片
+    fileListPic () {
+      if (this.$route.query.id) {
+        let pic = JSON.parse(sessionStorage.getItem('row'))
+        console.log(pic)
+        let newStr = pic.image.replace('"', "").replace('"', "")
+        this.fileList.push({url: newStr})
+        console.log(this.fileList)
+      } else {
+        return false
+      }
     }
   }
 }

@@ -33,6 +33,10 @@ const api = {
 //    商品添加
     addGoods (params) {
         return axios.get(base.addGoods, {params})
+    },
+//    批量删除商品
+    batchDelete (params) {
+        return axios.get(base.batchDelete,{params})
     }
 }
 

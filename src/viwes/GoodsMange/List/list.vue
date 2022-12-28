@@ -15,7 +15,7 @@
     <el-row style="margin: 0px 0 20px 0px">
       <el-col :span="9">
         <el-button type="warning" icon="el-icon-plus" @click="addGoods">添加商品</el-button>
-        <el-button type="danger" icon="el-icon-delete">批量删除</el-button>
+        <el-button type="danger" icon="el-icon-delete" @click="batchDelete">批量删除</el-button>
         <el-button type="primary" icon="el-icon-search" @click="goodsSearch">查询</el-button>
         <el-button type="info" icon="el-icon-search" @click="searchReset">重置</el-button>
       </el-col>
@@ -23,6 +23,7 @@
       <el-table
           :data="tableData"
           border
+          @selection-change="onSelectionChange"
           style="width: 100%;margin-bottom: 20px">
         <el-table-column
             type="selection"
@@ -57,11 +58,18 @@
             prop="descs"
             :show-overflow-tooltip="true"
             label="商品描述">
+          <template slot-scope="scope">
+             <p v-html="scope.row.descs"></p>
+          </template>
         </el-table-column>
         <el-table-column
             prop="image"
+            align="center"
             :show-overflow-tooltip="true"
             label="商品图片">
+          <template slot-scope="scope">
+            <img class="pic" :src="handlePic(scope.row.image)" alt="">
+          </template>
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
@@ -69,7 +77,7 @@
                 size="mini"
                 icon="el-icon-edit"
                 type="primary"
-                @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                @click="handleEdit(scope.row)">编辑</el-button>
             <el-button
                 size="mini"
                 type="danger"
@@ -102,7 +110,9 @@ export default {
       tableData: [],
       total: 0,
       page: 1,
-      pageSize: 10
+      pageSize: 10,
+      //批量删除的id
+      ids: [],
     }
   },
   created() {
@@ -175,18 +185,73 @@ export default {
           message: '已取消删除'
         });
       });
-      console.log(row)
     },
   //  添加商品
     addGoods () {
       this.$router.push('/goods/addgoods')
     },
-  }
+    // 当选择项发生变化时会触发该事件
+    onSelectionChange (selection) {
+      console.log(selection);
+      selection.forEach(item => {
+        this.ids.push(item.id)
+      })
+    },
+    /*批量删除*/
+    batchDelete () {
+      this.$confirm('此操作将永久删除该商品, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const newIds = []
+        this.ids.forEach(item => {
+          if (!newIds.includes(item)) {
+            newIds.push(item)
+          }
+        })
+        if (newIds.length > 0) {
+          const ids = newIds.join(',')
+          this.$api.batchDelete({ids}).then(res => {
+            if (res.data.status === 200) {
+              this.getGoodsListData()
+              this.$message.success('删除商品成功')
+            } else {
+              this.$message.error('删除商品失败')
+            }
+            console.log(res)
+          })
+        } else {
+          this.$message.error('请先选择要删除的商品')
+        }
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      })
+    },
+    //处理商品列表图片
+    handlePic (pic) {
+      pic = pic.replace('"', "").replace('"', "")
+      return pic
+    },
+    handleEdit (row) {
+      sessionStorage.setItem('row', JSON.stringify(row))
+      this.$router.push({path: '/goods/addgoods', query: {id: row.id}})
+    }
+  },
 }
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .goods-list {
   padding: 20px;
+  .el-table{
+    .pic{
+      width: 70px;
+      height: 70px;
+    }
+  }
 }
 </style>

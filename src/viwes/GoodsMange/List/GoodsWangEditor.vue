@@ -38,9 +38,17 @@ export default {
     onChange (editor) {
       const text = editor.getHtml()
       this.$emit('getWangEditorHtml', text)
+    },
+    showEditor () {
+      if (this.$route.query.id) {
+        let editorData = JSON.parse(sessionStorage.getItem('row'))
+        this.$nextTick(() => {
+          this.html = editorData.descs
+        })}
     }
   },
   mounted() {
+    this.showEditor()
   },
   beforeDestroy() {
     const editor = this.editor
